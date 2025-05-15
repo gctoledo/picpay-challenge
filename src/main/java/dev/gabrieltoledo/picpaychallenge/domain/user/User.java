@@ -31,6 +31,16 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 public class User {
 
+    public User(String firstName, String lastName, String document, String email, String password, UserType userType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.document = document;
+        this.email = email;
+        this.password = password;
+        this.balance = BigDecimal.ZERO;
+        this.userType = userType;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

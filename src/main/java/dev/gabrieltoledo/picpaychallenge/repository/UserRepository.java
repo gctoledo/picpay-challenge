@@ -10,5 +10,7 @@ import dev.gabrieltoledo.picpaychallenge.domain.user.User;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByDocument(String document);
+
+    Optional<User> findByEmail(String email);
     
 }
