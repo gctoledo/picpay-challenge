@@ -26,6 +26,10 @@ public class TransactionService {
         User sender = userService.findUserById(transaction.getSenderId());
         User receiver = userService.findUserById(transaction.getReceiverId());
 
+        if (sender.getId().equals(receiver.getId())) {
+            throw new IllegalArgumentException("Sender and receiver cannot be the same");
+        }
+
         userService.validateTransaction(sender, transaction.getAmount());
 
         boolean isAuthorized = authorizeTransaction(sender, transaction.getAmount());
