@@ -6,9 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import br.com.caelum.stella.validation.CNPJValidator;
-import br.com.caelum.stella.validation.CPFValidator;
-import br.com.caelum.stella.validation.InvalidStateException;
+import dev.gabrieltoledo.picpaychallenge.adapter.DocumentValidator;
 import dev.gabrieltoledo.picpaychallenge.domain.user.User;
 import dev.gabrieltoledo.picpaychallenge.domain.user.UserType;
 import dev.gabrieltoledo.picpaychallenge.exceptions.DuplicateFieldException;
@@ -24,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final DocumentValidator documentValidator;
 
     public void validateTransaction(User sender, BigDecimal amount) {
         if (sender.getUserType() != UserType.PERSONAL) {
@@ -48,26 +47,16 @@ public class UserService {
             throw new DuplicateFieldException("Document");
         });
 
-        validateDocument(user);
+        boolean documentIsValid = documentValidator.isValid(user.getDocument(), user.getUserType());
+
+        if (!documentIsValid) {
+            throw new InvalidDocumentException();
+        }
 
         userRepository.save(user);
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
-    }
-
-    private void validateDocument (User user) {
-        try {
-            if (user.getUserType() == UserType.PERSONAL) {
-                new CPFValidator().assertValid(user.getDocument());
-            }
-
-            if (user.getUserType() == UserType.BUSINESS) {
-                new CNPJValidator().assertValid(user.getDocument());
-            }
-        } catch (InvalidStateException e) {
-            throw new InvalidDocumentException();
-        }
     }
 }
