@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import dev.gabrieltoledo.picpaychallenge.exceptions.DuplicateFieldException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.InsufficientBalanceException;
+import dev.gabrieltoledo.picpaychallenge.exceptions.InvalidDocumentException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.UnauthorizedException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.UserNotFoundException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.dto.ErrorResponse;
@@ -54,6 +55,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleDuplicateFieldException(DuplicateFieldException e) {
         return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDocumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleInvalidDocumentException(InvalidDocumentException e) {
+        return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
