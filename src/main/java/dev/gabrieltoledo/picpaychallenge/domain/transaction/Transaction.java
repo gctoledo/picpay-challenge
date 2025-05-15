@@ -31,6 +31,10 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 public class Transaction {
 
+    public Transaction(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,8 +49,6 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private User receiver;
-
-    private Instant date;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
