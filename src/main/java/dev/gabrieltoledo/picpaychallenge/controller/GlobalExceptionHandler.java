@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import dev.gabrieltoledo.picpaychallenge.exceptions.DuplicateFieldException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.InsufficientBalanceException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.UnauthorizedException;
+import dev.gabrieltoledo.picpaychallenge.exceptions.UserNotFoundException;
 import dev.gabrieltoledo.picpaychallenge.exceptions.dto.ErrorResponse;
 import dev.gabrieltoledo.picpaychallenge.exceptions.dto.FieldErrors;
 
@@ -32,14 +34,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleEmailAlreadyExistsException(UnauthorizedException e) {
+    public ErrorResponse handleUnauthorizedException(UnauthorizedException e) {
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), e.getMessage());
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErrorResponse handleEmailAlreadyExistsException(InsufficientBalanceException e) {
+    public ErrorResponse handleInsufficientBalanceException(InsufficientBalanceException e) {
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundExceptions(UserNotFoundException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateFieldException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDuplicateFieldException(DuplicateFieldException e) {
+        return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
