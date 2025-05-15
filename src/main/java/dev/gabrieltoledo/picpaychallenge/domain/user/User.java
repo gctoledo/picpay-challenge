@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "users")
@@ -28,16 +29,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class User {
 
-    public User(String firstName, String lastName, String document, String email, String password, UserType userType) {
+    public User(String firstName, String lastName, String document, String email, String password, BigDecimal balance, UserType userType) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.document = document;
         this.email = email;
         this.password = password;
-        this.balance = BigDecimal.ZERO;
+        this.balance = balance;
         this.userType = userType;
     }
 
@@ -45,25 +47,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "first_name", length = 100)
+    @Column(name = "first_name", length = 100, nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", length = 200)
+    @Column(name = "last_name", length = 200, nullable = false)
     private String lastName;
 
-    @Column(unique = true, length = 25)
+    @Column(unique = true, length = 25, nullable = false)
     private String document;
     
-    @Column(unique = true, length = 100)
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String password;
 
-    @Column(precision = 19, scale = 2)
+    @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "user_type")
+    @Column(name = "user_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
