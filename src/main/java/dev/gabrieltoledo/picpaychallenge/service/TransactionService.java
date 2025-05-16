@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import dev.gabrieltoledo.picpaychallenge.controller.dto.CreateTransactionRequest;
+import dev.gabrieltoledo.picpaychallenge.controller.dto.TransactionResponse;
 import dev.gabrieltoledo.picpaychallenge.domain.transaction.Transaction;
 import dev.gabrieltoledo.picpaychallenge.domain.user.User;
 import dev.gabrieltoledo.picpaychallenge.exceptions.UnauthorizedException;
@@ -21,8 +22,9 @@ public class TransactionService {
     private final UserService userService;
     private final TransactionRepository transactionRepository;
     private final RestTemplate restTemplate;
+    private final NotificationService notificationService;
 
-    public void save(CreateTransactionRequest transaction) {
+    public TransactionResponse createTransaction(CreateTransactionRequest transaction) {
         User sender = userService.findUserById(transaction.getSenderId());
         User receiver = userService.findUserById(transaction.getReceiverId());
 
@@ -45,12 +47,18 @@ public class TransactionService {
         sender.setBalance(sender.getBalance().subtract(transaction.getAmount()));
         receiver.setBalance(receiver.getBalance().add(transaction.getAmount()));
 
-        transactionRepository.save(transactionToSave);
+        Transaction saved = transactionRepository.save(transactionToSave);
         userService.update(sender);
         userService.update(receiver);
+
+        // Notification API from challenge is not available
+        // notificationService.sendNotification(sender, "Transaction sent successful");
+        // notificationService.sendNotification(receiver, "Transaction received successful");
+
+        return TransactionResponse.build(saved);
     }
 
-    public boolean authorizeTransaction(User sender, BigDecimal amount) {
+    private boolean authorizeTransaction(User sender, BigDecimal amount) {
         ResponseEntity<Map> response = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
